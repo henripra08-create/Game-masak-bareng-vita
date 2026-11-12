@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Warung Masakan Chef Vita</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+ margin:0;
+ font-family:Arial,sans-serif;
+ background:#f4eaff;
+ color:#59247d;
+}
+
+header{
+ background:linear-gradient(135deg,#702ca9,#bd83ec);
+ color:white;
+ text-align:center;
+ padding:20px 8px;
+ border-radius:0 0 25px 25px;
+}
+
+header h1{font-size:22px;margin:5px}
+
+.stats{
+ display:flex;
+ gap:7px;
+ padding:12px;
+}
+
+.stat{
+ background:white;
+ border-radius:13px;
+ padding:12px 3px;
+ flex:1;
+ text-align:center;
+ box-shadow:0 3px 8px #d9c4ec;
+ font-size:12px;
+ font-weight:bold;
+}
+
+.stat span{
+ display:block;
+ color:#913ac4;
+ font-size:16px;
+ margin-top:7px;
+}
+
+.container{padding:12px}
+h2{font-size:19px}
+
+.menu{
+ display:grid;
+ grid-template-columns:repeat(2,1fr);
+ gap:10px;
+}
+
+.food{
+ background:white;
+ border:2px solid #e3cdf7;
+ border-radius:15px;
+ padding:12px;
+ text-align:center;
+}
+
+.emoji{font-size:36px}
+
+button{
+ background:#853ab9;
+ color:white;
+ border:0;
+ padding:11px 14px;
+ border-radius:10px;
+ font-weight:bold;
+ cursor:pointer;
+}
+
+.food button{margin-top:5px}
+
+button:active{transform:scale(.96)}
+
+.kitchen{
+ background:white;
+ border-radius:20px;
+ padding:15px;
+ margin-top:15px;
+ text-align:center;
+ box-shadow:0 4px 10px #d9c4ec;
+}
+
+.customer{
+ background:#efe0ff;
+ padding:13px;
+ border-radius:15px;
+ margin-bottom:15px;
+}
+
+.customer strong{font-size:20px}
+
+.stove{
+ position:relative;
+ width:270px;
+ height:260px;
+ margin:10px auto;
+}
+
+/* WAJAN */
+
+.pan{
+ position:absolute;
+ top:8px;
+ left:50%;
+ transform:translateX(-50%);
+ width:190px;
+ height:105px;
+ background:radial-gradient(ellipse,#45404b,#201d25);
+ border:10px solid #69636e;
+ border-radius:50%;
+ z-index:5;
+ box-shadow:0 5px 9px #aaa;
+}
+
+.pan:after{
+ content:"";
+ position:absolute;
+ width:72px;
+ height:14px;
+ background:#69636e;
+ right:-70px;
+ top:30px;
+ border-radius:10px;
+}
+
+#ingredients{
+ font-size:29px;
+ padding-top:25px;
+}
+
+/* SENDOK */
+
+#spoon{
+ position:absolute;
+ z-index:9;
+ font-size:38px;
+ left:110px;
+ top:30px;
+ cursor:grab;
+ touch-action:none;
+ user-select:none;
+}
+
+/* KOMPOR */
+
+.burner{
+ position:absolute;
+ top:140px;
+ left:50%;
+ transform:translateX(-50%);
+ width:165px;
+ height:38px;
+ background:linear-gradient(#aaa,#555);
+ border-radius:12px;
+ border:5px solid #777;
+ z-index:3;
+}
+
+.burner:before{
+ content:"";
+ position:absolute;
+ width:115px;
+ height:15px;
+ background:#35313a;
+ border-radius:50%;
+ top:-10px;
+ left:20px;
+}
+
+/* API BERBENTUK BULAT */
+
+.flames{
+ position:absolute;
+ top:111px;
+ left:50%;
+ transform:translateX(-50%);
+ width:150px;
+ height:47px;
+ display:none;
+ justify-content:center;
+ align-items:center;
+ gap:5px;
+ z-index:4;
+}
+
+.flames.on{display:flex}
+
+.fire{
+ width:22px;
+ height:22px;
+ border-radius:50%;
+ background:radial-gradient(circle at 40% 35%,
+ #fff7a1 0%,#ffb52c 35%,#ff5c16 70%,#e32b18 100%);
+ box-shadow:0 0 12px #ff7b16;
+ animation:fireMove .35s infinite alternate;
+}
+
+.fire:nth-child(2){width:29px;height:29px;animation-delay:.1s}
+.fire:nth-child(3){width:34px;height:34px;animation-delay:.2s}
+.fire:nth-child(4){width:29px;height:29px;animation-delay:.15s}
+.fire:nth-child(5){width:22px;height:22px;animation-delay:.05s}
+
+@keyframes fireMove{
+ from{transform:scale(.75);opacity:.75}
+ to{transform:scale(1.15);opacity:1}
+}
+
+/* KAKI KOMPOR */
+
+.stoveBase{
+ position:absolute;
+ top:170px;
+ left:50%;
+ transform:translateX(-50%);
+ width:190px;
+ height:65px;
+ background:linear-gradient(135deg,#a38eaf,#6d5c7b);
+ border:4px solid #604a70;
+ border-radius:15px;
+ z-index:2;
+ box-shadow:0 5px 8px #c5b1d3;
+}
+
+.stoveBase:after{
+ content:"CHEF VITA";
+ position:absolute;
+ top:20px;
+ left:0;
+ right:0;
+ color:white;
+ font-weight:bold;
+ font-size:13px;
+}
+
+.progress{
+ height:14px;
+ background:#eadcf7;
+ border-radius:20px;
+ overflow:hidden;
+ margin:12px 0;
+}
+
+#bar{
+ height:100%;
+ width:0;
+ background:#a34cdb;
+ transition:.2s;
+}
+
+.plate{
+ width:135px;
+ height:105px;
+ border-radius:50%;
+ background:#f4eff9;
+ border:8px solid white;
+ box-shadow:0 3px 8px #c8b5d9;
+ margin:15px auto;
+ display:flex;
+ justify-content:center;
+ align-items:center;
+ font-size:38px;
+}
+
+.controls{
+ display:flex;
+ justify-content:center;
+ flex-wrap:wrap;
+ gap:8px;
+ margin:12px 0;
+}
+
+.info{
+ background:#f4eaff;
+ border-radius:12px;
+ padding:10px;
+}
+
+#message{
+ min-height:30px;
+ font-weight:bold;
+ color:#8339b8;
+}
+
+.power{
+ background:#8d35c2;
+ margin:5px;
+}
+
+.power.off{
+ background:#777;
+}
+
+footer{
+ text-align:center;
+ padding:20px;
+ color:#9664b8;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>💜 WARUNG MASAKAN CHEF VITA 💜</h1>
+<p>Masakan lezat, pelanggan puas!</p>
+</header>
+
+<div class="stats">
+<div class="stat">💰 UANG MASUK
+<span id="money">Rp0</span></div>
+<div class="stat">⭐ SCORE
+<span id="score">0</span></div>
+<div class="stat">🌟 RATING
+<span id="rating">0.0</span></div>
+</div>
+
+<div class="container">
+
+<h2>🍽️ DAFTAR MENU</h2>
+<div class="menu" id="menu"></div>
+
+<div class="kitchen">
+
+<h2>👩🏻‍🍳 DAPUR CHEF VITA</h2>
+
+<div class="customer">
+<div style="font-size:38px">🧑🏻</div>
+<p>Pelanggan sekarang:</p>
+<strong id="customerName">Pija</strong>
+<p id="orderText">Menunggu pesanan...</p>
+<button onclick="repeatOrder()">🔊 Dengarkan Pesanan</button>
+</div>
+
+<h3>🔥 KOMPOR MEMASAK</h3>
+
+<div class="stove" id="stove">
+
+<div class="pan" id="pan">
+<div id="ingredients">🍳</div>
+</div>
+
+<div id="spoon">🥄</div>
+
+<div class="flames" id="flames">
+<div class="fire"></div>
+<div class="fire"></div>
+<div class="fire"></div>
+<div class="fire"></div>
+<div class="fire"></div>
+</div>
+
+<div class="burner"></div>
+<div class="stoveBase"></div>
+
+</div>
+
+<p id="stoveStatus">⚫ Kompor sedang mati</p>
+
+<div class="controls">
+<button class="power" id="powerButton" onclick="toggleStove()">
+🔥 NYALAKAN KOMPOR
+</button>
+</div>
+
+<p><b>Geser sendok di dalam wajan untuk mengaduk!</b></p>
+
+<div class="progress">
+<div id="bar"></div>
+</div>
+
+<p id="progressText">Proses memasak: 0%</p>
+
+<div class="controls">
+<button onclick="startCooking()">🍳 Mulai Memasak</button>
+<button onclick="resetCooking()">🔄 Ulangi</button>
+</div>
+
+<div class="info">
+<h3>🍽️ PIRING PENYAJIAN</h3>
+<div class="plate" id="plate">🍽️</div>
+<p id="plateText">Belum ada makanan</p>
+<button onclick="serveFood()">🍽️ Sajikan Makanan</button>
+</div>
+
+<p id="message">Pilih menu untuk mulai memasak!</p>
+
+</div>
+</div>
+
+<footer>💜 WARUNG MASAKAN CHEF VITA 💜</footer>
+
+<script>
+
+const menus=[
+{name:"Nasi Goreng",price:15000,emoji:"🍛"},
+{name:"Mie Goreng",price:12000,emoji:"🍜"},
+{name:"Telur Dadar",price:8000,emoji:"🍳"},
+{name:"Ayam Goreng",price:18000,emoji:"🍗"},
+{name:"Sosis Bakar",price:10000,emoji:"🌭"},
+{name:"Pancake",price:13000,emoji:"🥞"}
+];
+
+const customers=[
+"Pija","Feby","Annisa","Vita","Asyifa",
+"Nindi","Aisyah","Nazril","Shubki"
+];
+
+let money=0;
+let score=0;
+let totalRating=0;
+let ratingCount=0;
+let customerIndex=0;
+let selected=null;
+let currentOrder=null;
+let cooking=false;
+let cooked=false;
+let stoveOn=false;
+let progress=0;
+let stirring=false;
+let lastX=0;
+let lastY=0;
+let lastStir=0;
+
+const spoon=document.getElementById("spoon");
+const pan=document.getElementById("pan");
+const stove=document.getElementById("stove");
+const flames=document.getElementById("flames");
+const powerButton=document.getElementById("powerButton");
+
+const menuBox=document.getElementById("menu");
+
+menus.forEach((food,index)=>{
+let div=document.createElement("div");
+div.className="food";
+div.innerHTML=`
+<div class="emoji">${food.emoji}</div>
+<b>${food.name}</b>
+<p>Rp${food.price.toLocaleString("id-ID")}</p>
+<button onclick="chooseFood(${index})">Pilih Menu</button>
+`;
+menuBox.appendChild(div);
+});
+
+/* TOMBOL KOMPOR */
+
+function toggleStove(){
+
+if(stoveOn){
+stoveOn=false;
+flames.classList.remove("on");
+powerButton.innerText="🔥 NYALAKAN KOMPOR";
+powerButton.classList.add("off");
+document.getElementById("stoveStatus").innerText="⚫ Kompor sedang mati";
+
+if(cooking){
+cooking=false;
+document.getElementById("message").innerText=
+"Kompor dimatikan. Nyalakan kembali untuk melanjutkan memasak.";
+}
+
+}else{
+stoveOn=true;
+flames.classList.add("on");
+powerButton.innerText="⛔ MATIKAN KOMPOR";
+powerButton.classList.remove("off");
+document.getElementById("stoveStatus").innerText="🔥 Kompor sedang menyala!";
+document.getElementById("message").innerText="Kompor menyala! Siap memasak.";
+}
+}
+
+/* PILIH MENU */
+
+function chooseFood(index){
+
+selected=menus[index];
+cooking=false;
+cooked=false;
+progress=0;
+
+document.getElementById("ingredients").innerText=selected.emoji;
+document.getElementById("bar").style.width="0%";
+document.getElementById("progressText").innerText="Proses memasak: 0%";
+document.getElementById("plate").innerText="🍽️";
+document.getElementById("plateText").innerText="Belum ada makanan";
+
+document.getElementById("message").innerText=
+"Kamu memilih "+selected.name+"! Nyalakan kompor untuk memasak.";
+}
+
+function startCooking(){
+
+if(!selected){
+document.getElementById("message").innerText="Pilih menu terlebih dahulu!";
+return;
+}
+
+if(!stoveOn){
+document.getElementById("message").innerText="🔥 Nyalakan kompor dahulu!";
+return;
+}
+
+if(cooked){
+document.getElementById("message").innerText="Masakan sudah matang!";
+return;
+}
+
+cooking=true;
+document.getElementById("message").innerText=
+"Aduk masakan menggunakan sendok!";
+}
+
+function resetCooking(){
+
+cooking=false;
+cooked=false;
+progress=0;
+
+document.getElementById("bar").style.width="0%";
+document.getElementById("progressText").innerText="Proses memasak: 0%";
+document.getElementById("ingredients").innerText=selected?selected.emoji:"🍳";
+document.getElementById("message").innerText="Masakan diulang!";
+}
+
+/* SENDOK BISA DIGERAKKAN */
+
+spoon.addEventListener("pointerdown",e=>{
+e.preventDefault();
+spoon.setPointerCapture(e.pointerId);
+stirring=true;
+lastX=e.clientX;
+lastY=e.clientY;
+});
+
+spoon.addEventListener("pointermove",e=>{
+
+if(!stirring)return;
+e.preventDefault();
+
+const rect=stove.getBoundingClientRect();
+
+let x=e.clientX-rect.left-18;
+let y=e.clientY-rect.top-18;
+
+x=Math.max(0,Math.min(x,rect.width-40));
+y=Math.max(0,Math.min(y,rect.height-40));
+
+spoon.style.left=x+"px";
+spoon.style.top=y+"px";
+
+const panRect=pan.getBoundingClientRect();
+
+const inside=
+e.clientX>=panRect.left &&
+e.clientX<=panRect.right &&
+e.clientY>=panRect.top &&
+e.clientY<=panRect.bottom;
+
+const distance=Math.hypot(e.clientX-lastX,e.clientY-lastY);
+
+if(inside && distance>3 && cooking && !cooked && stoveOn){
+
+const now=Date.now();
+
+if(now-lastStir>65){
+progress=Math.min(100,progress+2);
+lastStir=now;
+updateProgress();
+}
+}
+
+lastX=e.clientX;
+lastY=e.clientY;
+
+spoon.style.transform=
+`rotate(${Math.sin(Date.now()/60)*25}deg)`;
+});
+
+function stopStirring(){stirring=false}
+
+spoon.addEventListener("pointerup",stopStirring);
+spoon.addEventListener("pointercancel",stopStirring);
+
+function updateProgress(){
+
+document.getElementById("bar").style.width=progress+"%";
+document.getElementById("progressText").innerText=
+"Proses memasak: "+progress+"%";
+
+if(progress>=100){
+
+cooked=true;
+cooking=false;
+
+document.getElementById("ingredients").innerText=
+"✨"+selected.emoji+"✨";
+
+document.getElementById("message").innerText=
+"🎉 Masakan matang! Sajikan di piring.";
+}
+}
+
+/* SUARA PELANGGAN */
+
+function speak(text){
+
+if(!("speechSynthesis" in window)){
+document.getElementById("message").innerText=
+"Browser tidak mendukung suara.";
+return;
+}
+
+window.speechSynthesis.cancel();
+
+const voice=new SpeechSynthesisUtterance(text);
+voice.lang="id-ID";
+voice.rate=0.85;
+voice.pitch=1.1;
+voice.volume=1;
+
+window.speechSynthesis.speak(voice);
+}
+
+function repeatOrder(){
+
+if(!currentOrder){
+document.getElementById("message").innerText="Belum ada pesanan!";
+return;
+}
+
+speak("Halo Chef Vita! Nama saya "+customers[customerIndex]+
+". Saya ingin memesan "+currentOrder.name+
+". Tolong masakkan untuk saya ya!");
+}
+
+function makeOrder(){
+
+currentOrder=menus[Math.floor(Math.random()*menus.length)];
+
+document.getElementById("customerName").innerText=
+customers[customerIndex];
+
+document.getElementById("orderText").innerText=
+"Memesan: "+currentOrder.name;
+
+speak("Halo Chef Vita! Nama saya "+customers[customerIndex]+
+". Saya ingin memesan "+currentOrder.name+
+". Tolong masakkan untuk saya ya!");
+}
+
+/* SAJIKAN MAKANAN */
+
+function serveFood(){
+
+if(!selected || !cooked){
+document.getElementById("message").innerText=
+"Masak sampai matang dahulu!";
+return;
+}
+
+if(!currentOrder){
+document.getElementById("message").innerText=
+"Belum ada pesanan!";
+return;
+}
+
+if(selected.name!==currentOrder.name){
+document.getElementById("message").innerText=
+"Pesanan tidak sesuai! Periksa menu pelanggan.";
+return;
+}
+
+const rating=4+Math.random();
+const earned=selected.price;
+
+money+=earned;
+score+=100;
+totalRating+=rating;
+ratingCount++;
+
+document.getElementById("money").innerText=
+"Rp"+money.toLocaleString("id-ID");
+
+document.getElementById("score").innerText=score;
+
+document.getElementById("rating").innerText=
+(totalRating/ratingCount).toFixed(1);
+
+document.getElementById("plate").innerText=selected.emoji;
+
+document.getElementById("plateText").innerText=
+"Berhasil menyajikan "+selected.name;
+
+document.getElementById("message").innerText=
+"🎉 "+customers[customerIndex]+" senang! Rating "+
+rating.toFixed(1)+" ⭐ Kamu mendapat Rp"+
+earned.toLocaleString("id-ID");
+
+speak("Wah, terima kasih Chef Vita! Masakannya enak sekali. Saya memberikan rating "+
+rating.toFixed(1)+" bintang. Sampai jumpa!");
+
+setTimeout(()=>{
+
+customerIndex=(customerIndex+1)%customers.length;
+
+selected=null;
+currentOrder=null;
+cooked=false;
+cooking=false;
+progress=0;
+
+document.getElementById("customerName").innerText=
+customers[customerIndex];
+
+document.getElementById("orderText").innerText="Menunggu pesanan...";
+
+document.getElementById("ingredients").innerText="🍳";
+document.getElementById("bar").style.width="0%";
+document.getElementById("progressText").innerText="Proses memasak: 0%";
+document.getElementById("plate").innerText="🍽️";
+document.getElementById("plateText").innerText="Belum ada makanan";
+
+document.getElementById("message").innerText=
+"Pilih menu untuk pelanggan berikutnya!";
+
+makeOrder();
+
+},2500);
+}
+
+/* MULAI GAME */
+
+document.body.insertAdjacentHTML("afterbegin",`
+<div id="startScreen" style="
+position:fixed;
+inset:0;
+background:#7135a8;
+z-index:100;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:20px;
+color:white;
+text-align:center;">
+<div>
+<h1>💜 WARUNG MASAKAN CHEF VITA 💜</h1>
+<p>Siap melayani pelanggan dan menjadi koki hebat?</p>
+<button onclick="beginGame()" style="
+background:white;
+color:#7135a8;
+padding:16px 25px;
+font-size:18px;">
+▶ MULAI BERMAIN
+</button>
+</div>
+</div>
+`);
+
+function beginGame(){
+document.getElementById("startScreen").remove();
+makeOrder();
+}
+
+</script>
+</body>
+</html>
